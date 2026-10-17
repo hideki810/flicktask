@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+  <meta name="theme-color" content="#f4f5f8" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Flick" />
+  <title>Flick</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icon-180.png" />
+  <link rel="stylesheet" href="/src/client/style.css" />
+</head>
+<body class="loading">
+  <div class="backdrop" aria-hidden="true"><i></i><i></i><i></i></div>
+
+  <header class="top">
+    <h1 id="viewTitle" class="large-title"><span class="sk sk-title"></span></h1>
+    <button id="accountBtn" class="glass avatar" type="button" aria-label="アカウント">
+      <span class="sk sk-circle"></span>
+    </button>
+  </header>
+
+  <main>
+    <!-- メモ欄は読み込みを待たずに最初から使える（スケルトンにしない） -->
+    <form id="composer" class="glass composer" autocomplete="off">
+      <textarea id="memo" rows="1" placeholder="メモ" enterkeyhint="send" aria-label="メモ" autofocus></textarea>
+      <div class="composer-actions">
+        <button id="aiBtn" class="icon-btn ai-btn" type="button" aria-label="AIでタスクに分ける" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9zM18.5 15l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg>
+        </button>
+        <button id="addBtn" class="icon-btn add-btn" type="submit" aria-label="追加" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5.5 11.5L12 5l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </form>
+
+    <section id="list" class="list" aria-label="タスク">
+      <div class="skeleton-list" aria-hidden="true">
+        <div class="sk-row"><span class="sk sk-dot"></span><span class="sk sk-line" style="width:72%"></span></div>
+        <div class="sk-row"><span class="sk sk-dot"></span><span class="sk sk-line" style="width:54%"></span></div>
+        <div class="sk-row"><span class="sk sk-dot"></span><span class="sk sk-line" style="width:83%"></span></div>
+        <div class="sk-row"><span class="sk sk-dot"></span><span class="sk sk-line" style="width:47%"></span></div>
+        <div class="sk-row"><span class="sk sk-dot"></span><span class="sk sk-line" style="width:65%"></span></div>
+        <div class="sk-row"><span class="sk sk-dot"></span><span class="sk sk-line" style="width:38%"></span></div>
+      </div>
+    </section>
+  </main>
+
+  <nav id="tabs" class="glass tabbar" role="tablist" aria-label="ステータス">
+    <span class="tab-thumb" aria-hidden="true"></span>
+    <button class="tab" role="tab" data-view="todo" aria-selected="true"><span class="tab-label">未着手</span><span class="count"><span class="sk sk-count"></span></span></button>
+    <button class="tab" role="tab" data-view="doing" aria-selected="false"><span class="tab-label">進行中</span><span class="count"><span class="sk sk-count"></span></span></button>
+    <button class="tab" role="tab" data-view="done" aria-selected="false"><span class="tab-label">完了</span><span class="count"><span class="sk sk-count"></span></span></button>
+  </nav>
+
+  <div id="toast" class="glass toast" role="status" aria-live="polite"></div>
+
+  <div id="scrim" class="scrim" hidden></div>
+  <section id="sheet" class="glass sheet" role="dialog" aria-modal="true" hidden>
+    <div class="grabber" aria-hidden="true"></div>
+    <div id="sheetBody"></div>
+  </section>
+
+  <script type="module" src="/src/client/main.ts"></script>
+</body>
+</html>

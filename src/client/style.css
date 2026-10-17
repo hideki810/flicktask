@@ -1,0 +1,277 @@
+/* ===== デザイントークン（Apple HIG のシステムカラーと Liquid Glass の質感） ===== */
+:root {
+  --bg: #f4f5f8;
+  --label: #1c1c1e;
+  --label-2: rgba(60, 60, 67, 0.62);
+  --label-3: rgba(60, 60, 67, 0.32);
+  --separator: rgba(60, 60, 67, 0.12);
+  --blue: #007aff;
+  --orange: #ff9500;
+  --green: #34c759;
+  --red: #ff3b30;
+  --gray: #8e8e93;
+
+  --glass-fill: rgba(255, 255, 255, 0.58);
+  --glass-fill-strong: rgba(255, 255, 255, 0.78);
+  --glass-stroke: rgba(255, 255, 255, 0.85);
+  --glass-shadow: 0 1px 1px rgba(15, 23, 42, 0.04), 0 8px 28px rgba(15, 23, 42, 0.08);
+  --glass-blur: blur(22px) saturate(190%);
+
+  --r-card: 22px;
+  --r-capsule: 999px;
+  --gutter: 16px;
+
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 420ms;
+
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN',
+    'Noto Sans JP', 'Segoe UI', system-ui, sans-serif;
+  color: var(--label);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+html, body { margin: 0; min-height: 100%; }
+body { overflow-x: hidden; overscroll-behavior-y: none; }
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; padding: 0; }
+[hidden] { display: none !important; }
+
+/* 背景：ガラスの屈折が見えるよう、ごく淡い色の光を置く */
+.backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.backdrop i { position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%; filter: blur(70px); opacity: 0.45; animation: drift 28s ease-in-out infinite alternate; }
+.backdrop i:nth-child(1) { background: #cfe3ff; top: -25vmax; left: -15vmax; }
+.backdrop i:nth-child(2) { background: #ffe3d1; bottom: -30vmax; right: -20vmax; animation-delay: -9s; }
+.backdrop i:nth-child(3) { background: #d9f7e4; top: 30%; left: 40%; width: 40vmax; height: 40vmax; animation-delay: -17s; }
+@keyframes drift { to { transform: translate3d(6vmax, 4vmax, 0) scale(1.12); } }
+
+/* ===== Liquid Glass ===== */
+.glass {
+  position: relative;
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 0.5px solid var(--glass-stroke);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -0.5px 0 rgba(255, 255, 255, 0.5), var(--glass-shadow);
+  isolation: isolate;
+}
+/* 上辺の鏡面ハイライト */
+.glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 42%),
+    radial-gradient(120% 60% at 50% -10%, rgba(255, 255, 255, 0.6), transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ===== レイアウト ===== */
+.top, main { max-width: 640px; margin: 0 auto; padding: 0 var(--gutter); }
+.top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: calc(var(--safe-t) + 14px); padding-bottom: 10px;
+}
+.large-title { margin: 0; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; min-height: 40px; display: flex; align-items: center; }
+.large-title .t { display: inline-block; animation: title-in 520ms var(--spring) both; }
+@keyframes title-in { from { opacity: 0; transform: translateY(10px) scale(0.96); filter: blur(6px); } }
+
+.avatar { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; overflow: hidden; transition: transform 300ms var(--spring); }
+.avatar:active { transform: scale(0.9); }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar svg { width: 22px; height: 22px; fill: var(--label-2); }
+.avatar .initial { font-weight: 600; font-size: 16px; }
+
+/* フリックで飛ばした行が画面幅を広げないよう切り取る（広がるとスマホでタブバーがずれる） */
+main { padding-bottom: calc(var(--safe-b) + 110px); overflow-x: clip; }
+
+/* ===== メモ欄 ===== */
+.composer {
+  display: flex; align-items: flex-end; gap: 6px;
+  border-radius: 26px; padding: 8px 8px 8px 18px; margin: 4px 0 18px;
+  transition: box-shadow 300ms var(--ease-out), transform 300ms var(--spring);
+}
+.composer:focus-within { box-shadow: inset 0 1px 0 #fff, 0 0 0 4px rgba(0, 122, 255, 0.12), var(--glass-shadow); }
+.composer textarea {
+  flex: 1; min-height: 44px; max-height: 40vh; resize: none; border: 0; outline: 0; background: transparent;
+  font: inherit; font-size: 17px; line-height: 24px; padding: 10px 0; color: var(--label);
+}
+.composer textarea::placeholder { color: var(--label-3); }
+.composer-actions { display: flex; gap: 6px; }
+.icon-btn {
+  width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; flex: none;
+  transition: transform 260ms var(--spring), background-color 200ms, opacity 200ms, color 200ms;
+}
+.icon-btn svg { width: 22px; height: 22px; }
+.icon-btn:active:not(:disabled) { transform: scale(0.86); }
+.icon-btn:disabled { opacity: 0.35; cursor: default; }
+.add-btn { background: var(--blue); color: #fff; box-shadow: 0 4px 14px rgba(0, 122, 255, 0.35); }
+.add-btn:disabled { background: var(--gray); box-shadow: none; }
+.ai-btn { color: #8a5cf6; background: rgba(138, 92, 246, 0.1); }
+.ai-btn svg { fill: currentColor; }
+.composer.thinking { animation: think 1.6s linear infinite; }
+.composer.thinking .ai-btn svg { animation: spin 1.1s var(--ease-out) infinite; }
+@keyframes think {
+  0%, 100% { box-shadow: inset 0 1px 0 #fff, 0 0 0 2px rgba(138, 92, 246, 0.35), 0 0 24px rgba(0, 122, 255, 0.18); }
+  50% { box-shadow: inset 0 1px 0 #fff, 0 0 0 2px rgba(0, 122, 255, 0.35), 0 0 28px rgba(138, 92, 246, 0.28); }
+}
+@keyframes spin { to { transform: rotate(360deg) scale(1.1); } }
+
+/* ===== タスク一覧 ===== */
+.list { position: relative; display: flex; flex-direction: column; gap: 10px; }
+.row { position: relative; border-radius: var(--r-card); touch-action: pan-y; }
+.row-bg {
+  position: absolute; inset: 0; border-radius: inherit; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 22px; color: #fff; font-weight: 600; font-size: 15px; opacity: 0; transition: background-color 180ms;
+}
+.row.swiping .row-bg { opacity: 1; }
+.row-bg .hint { display: flex; align-items: center; gap: 6px; transform: scale(0.85); opacity: 0.7; transition: transform 260ms var(--spring), opacity 200ms; }
+.row-bg .hint.on { transform: scale(1.08); opacity: 1; }
+.row-bg .hint svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+.card {
+  display: flex; align-items: center; gap: 12px; min-height: 58px; padding: 10px 12px 10px 14px;
+  border-radius: var(--r-card); background: var(--glass-fill-strong); user-select: none; -webkit-user-select: none;
+  will-change: transform; cursor: grab; outline: none;
+}
+.card:focus-visible { box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.45), var(--glass-shadow); }
+.row.dragging .card { cursor: grabbing; transition: none; box-shadow: inset 0 1px 0 #fff, 0 14px 40px rgba(15, 23, 42, 0.16); }
+.check {
+  width: 28px; height: 28px; border-radius: 50%; flex: none; border: 2px solid var(--label-3);
+  display: grid; place-items: center; transition: transform 300ms var(--spring), background-color 200ms, border-color 200ms;
+}
+.check svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 24; stroke-dashoffset: 24; transition: stroke-dashoffset 360ms var(--ease-out) 60ms; }
+.check:active { transform: scale(0.8); }
+.row[data-status='doing'] .check { border-color: var(--orange); background: conic-gradient(var(--orange) 0 50%, transparent 50% 100%); }
+.row[data-status='done'] .check { border-color: var(--green); background: var(--green); }
+.row[data-status='done'] .check svg { stroke-dashoffset: 0; }
+.title { flex: 1; min-width: 0; font-size: 17px; line-height: 1.4; word-break: break-word; white-space: pre-wrap; }
+.row[data-status='done'] .title { color: var(--label-2); text-decoration: line-through; text-decoration-color: var(--label-3); }
+
+/* PC ではホバーで矢印ボタン（スワイプの代わり） */
+.desk { display: none; gap: 4px; }
+.desk button { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--label-2); transition: background-color 150ms, transform 250ms var(--spring); }
+.desk button:hover { background: rgba(0, 0, 0, 0.06); }
+.desk button:active { transform: scale(0.85); }
+.desk svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+@media (hover: hover) and (pointer: fine) {
+  .desk { display: flex; opacity: 0; transition: opacity 180ms; }
+  .card:hover .desk, .card:focus-within .desk, .card:focus .desk { opacity: 1; }
+}
+
+.empty { display: grid; place-items: center; padding: 64px 0; color: var(--label-3); animation: fade-up 500ms var(--ease-out) both; }
+.empty svg { width: 54px; height: 54px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+@keyframes fade-up { from { opacity: 0; transform: translateY(12px); } }
+
+/* ===== タブバー（浮いたガラスのカプセル） ===== */
+.tabbar {
+  position: fixed; left: 50%; bottom: calc(var(--safe-b) + 14px); transform: translateX(-50%);
+  width: min(calc(100% - 2 * var(--gutter)), 420px); height: 62px; border-radius: var(--r-capsule);
+  display: grid; grid-template-columns: repeat(3, 1fr); padding: 5px; z-index: 10;
+}
+.tab-thumb {
+  position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc((100% - 10px) / 3); border-radius: var(--r-capsule);
+  background: rgba(255, 255, 255, 0.9); box-shadow: 0 2px 10px rgba(15, 23, 42, 0.1), inset 0 1px 0 #fff;
+  transition: transform 520ms var(--spring), width 300ms;
+}
+.tab { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; border-radius: var(--r-capsule); color: var(--label-2); transition: color 250ms, transform 300ms var(--spring); }
+.tab:active { transform: scale(0.93); }
+.tab[aria-selected='true'] { color: var(--label); }
+.tab-label { font-size: 13px; font-weight: 600; }
+.count { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; min-height: 22px; display: grid; place-items: center; }
+.tab[data-view='todo'][aria-selected='true'] .count { color: var(--blue); }
+.tab[data-view='doing'][aria-selected='true'] .count { color: var(--orange); }
+.tab[data-view='done'][aria-selected='true'] .count { color: var(--green); }
+.count.bump { animation: bump 420ms var(--spring); }
+@keyframes bump { 40% { transform: scale(1.35); } }
+
+/* ===== トースト ===== */
+.toast {
+  position: fixed; left: 50%; bottom: calc(var(--safe-b) + 88px); z-index: 20;
+  display: flex; align-items: center; gap: 14px; padding: 10px 10px 10px 18px; border-radius: var(--r-capsule);
+  font-size: 15px; width: max-content; max-width: calc(100% - 2 * var(--gutter)); background: rgba(255, 255, 255, 0.86);
+  transform: translate(-50%, 24px) scale(0.92); opacity: 0; pointer-events: none;
+  transition: transform 460ms var(--spring), opacity 220ms;
+}
+.toast.show { transform: translate(-50%, 0) scale(1); opacity: 1; pointer-events: auto; }
+.toast .msg { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toast button { color: var(--blue); font-weight: 600; padding: 6px 12px; border-radius: var(--r-capsule); background: rgba(0, 122, 255, 0.1); flex: none; }
+
+/* ===== シート ===== */
+.scrim { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.18); z-index: 30; animation: fade 300ms both; }
+.scrim.out { animation: fade 260ms reverse both; }
+@keyframes fade { from { opacity: 0; } }
+.sheet {
+  position: fixed; left: 50%; bottom: 0; z-index: 31; width: min(100%, 560px);
+  border-radius: 32px 32px 0 0; padding: 8px 20px calc(var(--safe-b) + 22px); background: rgba(255, 255, 255, 0.82);
+  transform: translateX(-50%); animation: sheet-in 520ms var(--spring) both;
+}
+.sheet.out { animation: sheet-out 280ms var(--ease-out) both; }
+@keyframes sheet-in { from { transform: translate(-50%, 100%); } }
+@keyframes sheet-out { to { transform: translate(-50%, 100%); } }
+@media (min-width: 700px) {
+  .sheet { bottom: auto; top: 50%; border-radius: 32px; padding-bottom: 22px; transform: translate(-50%, -50%); animation-name: pop-in; }
+  .sheet.out { animation-name: pop-out; }
+  @keyframes pop-in { from { opacity: 0; transform: translate(-50%, -46%) scale(0.92); } }
+  @keyframes pop-out { to { opacity: 0; transform: translate(-50%, -48%) scale(0.95); } }
+}
+.grabber { width: 36px; height: 5px; border-radius: 3px; background: var(--label-3); margin: 0 auto 14px; }
+.sheet h2 { margin: 0 0 14px; font-size: 20px; font-weight: 700; }
+.sheet textarea {
+  width: 100%; min-height: 96px; resize: vertical; border: 0; outline: 0; border-radius: 16px; padding: 12px 14px;
+  font: inherit; font-size: 17px; line-height: 1.45; background: rgba(118, 118, 128, 0.1); color: var(--label);
+}
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
+.seg button { padding: 12px 0; border-radius: 14px; background: rgba(118, 118, 128, 0.1); font-weight: 600; font-size: 15px; transition: transform 260ms var(--spring), background-color 200ms, color 200ms; }
+.seg button:active { transform: scale(0.94); }
+.seg button[aria-pressed='true'][data-s='todo'] { background: var(--blue); color: #fff; }
+.seg button[aria-pressed='true'][data-s='doing'] { background: var(--orange); color: #fff; }
+.seg button[aria-pressed='true'][data-s='done'] { background: var(--green); color: #fff; }
+.btn-row { display: flex; gap: 10px; }
+.btn { flex: 1; min-height: 50px; border-radius: 16px; font-weight: 600; font-size: 17px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 260ms var(--spring), filter 150ms; }
+.btn:active { transform: scale(0.96); }
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-danger { background: rgba(255, 59, 48, 0.1); color: var(--red); }
+.btn-plain { background: rgba(118, 118, 128, 0.12); }
+.btn-google { background: #fff; border: 0.5px solid var(--separator); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06); text-decoration: none; color: var(--label); }
+.btn-google svg { width: 20px; height: 20px; }
+.profile { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.profile .avatar { width: 56px; height: 56px; }
+.profile .name { font-weight: 600; font-size: 17px; }
+.profile .mail { color: var(--label-2); font-size: 14px; }
+.sync-state { color: var(--label-2); font-size: 13px; margin: -6px 0 16px; display: flex; align-items: center; gap: 6px; }
+.sync-state::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+.sync-state.pending::before { background: var(--orange); }
+
+/* ===== スケルトン ===== */
+.sk {
+  display: block; border-radius: 10px;
+  background: linear-gradient(100deg, rgba(118, 118, 128, 0.1) 30%, rgba(255, 255, 255, 0.9) 50%, rgba(118, 118, 128, 0.1) 70%);
+  background-size: 300% 100%; animation: shimmer 1.4s ease-in-out infinite;
+}
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
+.sk-title { width: 120px; height: 34px; }
+.sk-circle { width: 100%; height: 100%; border-radius: 50%; }
+.sk-count { width: 18px; height: 16px; border-radius: 6px; }
+.skeleton-list { display: flex; flex-direction: column; gap: 10px; }
+.sk-row { display: flex; align-items: center; gap: 12px; height: 58px; padding: 0 14px; border-radius: var(--r-card); background: rgba(255, 255, 255, 0.55); border: 0.5px solid rgba(255, 255, 255, 0.8); }
+.sk-dot { width: 28px; height: 28px; border-radius: 50%; flex: none; }
+.sk-line { height: 16px; }
+.skeleton-list.out { animation: fade 240ms reverse both; }
+
+/* ===== 一覧の出入りアニメーション ===== */
+.row.enter { animation: row-in 560ms var(--spring) both; }
+@keyframes row-in { from { opacity: 0; transform: translateY(-14px) scale(0.94); filter: blur(4px); } }
+.list.slide-l .row { animation: slide-l 460ms var(--ease-out) both; }
+.list.slide-r .row { animation: slide-r 460ms var(--ease-out) both; }
+@keyframes slide-l { from { opacity: 0; transform: translateX(36px); } }
+@keyframes slide-r { from { opacity: 0; transform: translateX(-36px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
+}

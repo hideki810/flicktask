@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "flicktask",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/auth/*"]
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "flicktask", "database_id": "REPLACE_WITH_D1_DATABASE_ID", "migrations_dir": "migrations" }
+  ],
+  "ai": { "binding": "AI" },
+  "vars": { "AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast" },
+  "observability": { "enabled": true },
+  // ブラウザテスト用。Workers AI はローカルで動かないため外し、AI 部分は簡易分割で代わりに動く
+  "env": {
+    "e2e": {
+      "d1_databases": [
+        { "binding": "DB", "database_name": "flicktask-e2e", "database_id": "local-e2e", "migrations_dir": "migrations" }
+      ],
+      "vars": { "AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast", "DEV_LOGIN": "1", "GOOGLE_CLIENT_ID": "e2e-dummy.apps.googleusercontent.com" }
+    }
+  }
+}
